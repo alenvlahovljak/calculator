@@ -12,6 +12,8 @@
 
           // storing current input string and its last character in variables - used later
           var currentString = input.value;
+          currentString = currentString.replace(/\*/g, "×");
+          currentString = currentString.replace(/\//g, "÷");
           var lastChar = currentString[currentString.length - 1];
 
           // if result is not displayed, just keep adding
@@ -41,6 +43,8 @@
 
           // storing current input string and its last character in variables - used later
           var currentString = input.value;
+          currentString = currentString.replace(/\*/g, "×");
+          currentString = currentString.replace(/\//g, "÷");
           var lastChar = currentString[currentString.length - 1];
 
           // if last character entered is an operator, replace it with the currently pressed one
@@ -66,6 +70,8 @@
       result.addEventListener("click", function () {
         // this is the string that we will be processing eg. -10+26+33-56*34/23
         var inputString = input.value;
+        inputString = inputString.replace(/\*/g, "×");
+        inputString = inputString.replace(/\//g, "÷");
 
         // forming an array of numbers. e.g. for above string it will be: numbers = ["10", "26", "33", "56", "34", "23"]
         var numbers = inputString.split(/\+|\-|\×|\÷|\^/g);
@@ -194,7 +200,7 @@
     clear = document.getElementById('clear'); // clear button
 
   input.addEventListener('keydown', (e) => {
-    if (["Backspace", '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '+', '-', '×', '÷', '^'].indexOf(e.key) !== -1) {
+    if (["Backspace", '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '+', '-', '×', '÷', '^', '/', '*'].indexOf(e.key) !== -1) {
       // do something
       return true;
     } else {
