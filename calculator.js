@@ -17,14 +17,14 @@
           // if result is not displayed, just keep adding
           if (_resultDisplayed === false) {
             input.value += e.target.textContent;
-          } else if (_resultDisplayed === true && lastChar === "+" || lastChar === "-" || lastChar === "×" || lastChar === "÷") {
+          } else if (_resultDisplayed === true && lastChar === "+" || lastChar === "-" || lastChar === "×" || lastChar === "÷" || lastChar === "^") {
             // if result is currently displayed and user pressed an operator
             // we need to keep on adding to the string for next operation
             _resultDisplayed = false;
             input.value += e.target.textContent;
           } else {
             // if result is currently displayed and user pressed a number
-            // we need clear the input string and add the new input to start the new opration
+            // we need clear the input string and add the new input to start the new operation
             _resultDisplayed = false;
             input.value = "";
             input.value += e.target.textContent;
@@ -44,10 +44,10 @@
           var lastChar = currentString[currentString.length - 1];
 
           // if last character entered is an operator, replace it with the currently pressed one
-          if (lastChar === "+" || lastChar === "-" || lastChar === "×" || lastChar === "÷") {
+          if (lastChar === "+" || lastChar === "-" || lastChar === "×" || lastChar === "÷" || lastChar === "^") {
             input.value = currentString.substring(0, currentString.length - 1) + e.target.textContent;
-          } else if (currentString.length == 0) {
-            // if first key pressed is an opearator, don't do anything
+          } else if (currentString.length === 0) {
+            // if first key pressed is an operator, don't do anything
             console.log("enter a number first");
           } else {
             // else just add the operator pressed to the input
@@ -67,8 +67,8 @@
         // this is the string that we will be processing eg. -10+26+33-56*34/23
         var inputString = input.value;
 
-        // forming an array of numbers. eg for above string it will be: numbers = ["10", "26", "33", "56", "34", "23"]
-        var numbers = inputString.split(/\+|\-|\×|\÷/g);
+        // forming an array of numbers. e.g. for above string it will be: numbers = ["10", "26", "33", "56", "34", "23"]
+        var numbers = inputString.split(/\+|\-|\×|\÷|\^/g);
 
         // forming an array of operators. for above string it will be: operators = ["+", "+", "-", "*", "/"]
         // first we replace all the numbers and dot with empty string and then split
@@ -90,6 +90,14 @@
           get(operators, numbers) {
             this._operators = operators;
             this._numbers = numbers;
+          },
+          exponent() {
+            var exponent = this._operators.indexOf("^");
+            while (exponent != -1) {
+              this._numbers.splice(exponent, 2, this._numbers[exponent] ** this._numbers[exponent + 1]);
+              this._operators.splice(exponent, 1);
+              exponent = this._operators.indexOf("^");
+            }
           },
           divide() {
             var divide = this._operators.indexOf("÷");
@@ -142,6 +150,7 @@
         }
 
         operate.execute('get', operators, numbers);
+        operate.execute('exponent');
         operate.execute('divide');
         operate.execute('multiply');
         operate.execute('subtract');
@@ -185,7 +194,7 @@
     clear = document.getElementById('clear'); // clear button
 
   input.addEventListener('keydown', (e) => {
-    if (['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '+', '-', '×', '÷'].indexOf(e.key) !== -1) {
+    if (["Backspace", '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '+', '-', '×', '÷', '^'].indexOf(e.key) !== -1) {
       // do something
       return true;
     } else {
