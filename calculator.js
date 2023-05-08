@@ -9,12 +9,21 @@
       // adding click handlers to number buttons
       for (var i = 0; i < _numbers.length; i++) {
         _numbers[i].addEventListener("click", function (e) {
-
           // storing current input string and its last character in variables - used later
           var currentString = input.value;
           currentString = currentString.replace(/\*/g, "×");
           currentString = currentString.replace(/\//g, "÷");
           var lastChar = currentString[currentString.length - 1];
+
+          var operators = /[+\-×÷^/*]/;
+          var substrings = (currentString + e.target.textContent).split(operators);
+
+          for (var substr of substrings) {
+            if (e.target.textContent === '.' && /\..*\./.test(substr)) {
+              return e.preventDefault();
+            }
+          }
+
 
           // if result is not displayed, just keep adding
           if (_resultDisplayed === false) {
@@ -200,6 +209,20 @@
     clear = document.getElementById('clear'); // clear button
 
   input.addEventListener('keydown', (e) => {
+    var value = e.target.value + e.key;
+    var operators = /[+\-×÷^/*]/;
+    var substrings = value.split(operators);
+
+    if(e.key.match(operators) && e.target.value.endsWith(e.key)){
+      e.preventDefault();
+    }
+
+    for (var substr of substrings) {
+      if (e.key === '.' && /\..*\./.test(substr)) {
+        e.preventDefault();
+      }
+    }
+
     if (["Backspace", '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.', '+', '-', '×', '÷', '^', '/', '*'].indexOf(e.key) !== -1) {
       return true;
     } else {
