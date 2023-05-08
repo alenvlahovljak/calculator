@@ -200,8 +200,7 @@
     clear = document.getElementById('clear'); // clear button
 
   input.addEventListener('keydown', (e) => {
-    if (["Backspace", '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '+', '-', '×', '÷', '^', '/', '*'].indexOf(e.key) !== -1) {
-      // do something
+    if (["Backspace", '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.', '+', '-', '×', '÷', '^', '/', '*'].indexOf(e.key) !== -1) {
       return true;
     } else {
       e.preventDefault();
