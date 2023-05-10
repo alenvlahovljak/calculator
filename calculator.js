@@ -5,33 +5,24 @@
     var calculator = null;
 
     function create() {
+      var CALCULATOR_OPERATORS = ['+', '-', '×', '÷', '^'];
       var OPERATORS = /[+\-×÷^/*]/;
       var IS_DISPLAYED = false;
 
-      function getCurrentString(value) {
-        var currentString = value;
+      function getValueString(value) {
+        if (typeof value != 'string') {
+          throw new TypeError('Invalid argument: expected a string');
+        }
 
-        currentString = currentString.replace(/\*/g, "×");
-        currentString = currentString.replace(/\//g, "÷");
+        var str = value;
+        var lastChar = str[str.length - 1];
+        var numbers = str.split(/\+|\-|\×|\÷|\^/g);
+        var operators = str.replace(/[0-9]|\./g, "").split("");
 
-        var lastChar = currentString[currentString.length - 1];
+        str = str.replace(/\*/g, "×");
+        str = str.replace(/\//g, "÷");
 
-        return {currentString, lastChar};
-      }
-
-      function getInputString(value) {
-        var inputString = value;
-        inputString = inputString.replace(/\*/g, "×");
-        inputString = inputString.replace(/\//g, "÷");
-
-        // forming an array of numbers. e.g. for above string it will be: numbers = ["10", "26", "33", "56", "34", "23"]
-        var numbers = inputString.split(/\+|\-|\×|\÷|\^/g);
-
-        // forming an array of operators. for above string it will be: operators = ["+", "+", "-", "*", "/"]
-        // first we replace all the numbers and dot with empty string and then split
-        var operators = inputString.replace(/[0-9]|\./g, "").split("");
-
-        return {inputString, numbers, operators};
+        return {str, numbers, operators, lastChar};
       }
 
       function getNumbers(numbers) {
@@ -43,9 +34,9 @@
         for (var i = 0; i < numbers.length; i++) {
           numbers[i].addEventListener("click", function (e) {
             // storing current input string and its last character in variables - used later
-            const {currentString, lastChar} = getCurrentString(input.value);
+            const {str, lastChar} = getValueString(input.value);
 
-            var substrings = (currentString + e.target.textContent).split(OPERATORS);
+            var substrings = (str + e.target.textContent).split(OPERATORS);
 
             for (var substr of substrings) {
               if (e.target.textContent === '.' && /\..*\./.test(substr)) {
@@ -57,7 +48,7 @@
             // if result is not displayed, just keep adding
             if (IS_DISPLAYED === false) {
               input.value += e.target.textContent;
-            } else if (IS_DISPLAYED === true && lastChar === "+" || lastChar === "-" || lastChar === "×" || lastChar === "÷" || lastChar === "^") {
+            } else if (IS_DISPLAYED == true && CALCULATOR_OPERATORS.includes(lastChar)) {
               // if result is currently displayed and user pressed an operator
               // we need to keep on adding to the string for next operation
               IS_DISPLAYED = false;
@@ -69,7 +60,6 @@
               input.value = "";
               input.value += e.target.textContent;
             }
-
           });
         }
       }
@@ -83,12 +73,12 @@
         for (var i = 0; i < operators.length; i++) {
           operators[i].addEventListener("click", function (e) {
             // storing current input string and its last character in variables - used later
-            const {currentString, lastChar} = getCurrentString(input.value);
+            const {str, lastChar} = getValueString(input.value);
 
             // if last character entered is an operator, replace it with the currently pressed one
-            if (lastChar === "+" || lastChar === "-" || lastChar === "×" || lastChar === "÷" || lastChar === "^") {
-              input.value = currentString.substring(0, currentString.length - 1) + e.target.textContent;
-            } else if (currentString.length === 0) {
+            if (CALCULATOR_OPERATORS.includes(lastChar)) {
+              input.value = str.substring(0, str.length - 1) + e.target.textContent;
+            } else if (str.length === 0) {
               // if first key pressed is an operator, don't do anything
               console.log("enter a number first");
             } else {
@@ -108,9 +98,9 @@
         // on click of 'equal' button
         result.addEventListener("click", function () {
           // this is the string that we will be processing eg. -10+26+33-56*34/23
-          const {inputString, numbers, operators} = getInputString(input.value);
+          const {str, numbers, operators} = getValueString(input.value);
 
-          console.log(inputString);
+          console.log(str);
           console.log(operators);
           console.log(numbers);
           console.log("----------------------------");
@@ -121,31 +111,37 @@
           // the final element remaining in the array will be the output
 
           var operate = {
-            _operators: [], _numbers: [], get(operators, numbers) {
+            _operators: [],
+            _numbers: [],
+            get(operators, numbers) {
               this._operators = operators;
               this._numbers = numbers;
-            }, exponent() {
+            },
+            exponent() {
               var exponent = this._operators.indexOf("^");
               while (exponent != -1) {
                 this._numbers.splice(exponent, 2, this._numbers[exponent] ** this._numbers[exponent + 1]);
                 this._operators.splice(exponent, 1);
                 exponent = this._operators.indexOf("^");
               }
-            }, divide() {
+            },
+            divide() {
               var divide = this._operators.indexOf("÷");
               while (divide != -1) {
                 this._numbers.splice(divide, 2, this._numbers[divide] / this._numbers[divide + 1]);
                 this._operators.splice(divide, 1);
                 divide = this._operators.indexOf("÷");
               }
-            }, multiply() {
+            },
+            multiply() {
               var multiply = this._operators.indexOf("×");
               while (multiply != -1) {
                 this._numbers.splice(multiply, 2, this._numbers[multiply] * this._numbers[multiply + 1]);
                 this._operators.splice(multiply, 1);
                 multiply = this._operators.indexOf("×");
               }
-            }, add() {
+            },
+            add() {
               var add = this._operators.indexOf("+");
               while (add != -1) {
                 // using parseFloat is necessary, otherwise it will result in string concatenation :)
@@ -153,7 +149,8 @@
                 this._operators.splice(add, 1);
                 add = this._operators.indexOf("+");
               }
-            }, subtract() {
+            },
+            subtract() {
               var subtract = this._operators.indexOf("-");
               while (subtract != -1) {
                 this._numbers.splice(subtract, 2, this._numbers[subtract] - this._numbers[subtract + 1]);
