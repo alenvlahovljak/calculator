@@ -45,7 +45,8 @@
 
           for (var substr of substrings) {
             if (e.target.textContent === '.' && /\..*\./.test(substr)) {
-              return e.preventDefault();
+              e.preventDefault();
+              return false;
             }
           }
 
@@ -191,24 +192,19 @@
       }
 
       input.addEventListener('keydown', (e) => {
+        if (!['Backspace', 'Delete', '.', '+', '-', '*', '/', 'x', '^', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(e.key)) {
+          e.preventDefault();
+          return false;
+        }
+
         var value = e.target.value + e.key;
         var substrings = value.split(OPERATORS);
 
-        if (e.key.match(OPERATORS) && e.target.value.endsWith(e.key)) {
-          e.preventDefault();
-        }
-
-        for (var substr of substrings) {
-          if (e.key === '.' && /\..*\./.test(substr)) {
+        for (var sub of substrings) {
+          if (e.key === '.' && /\..*\./.test(sub)) {
             e.preventDefault();
+            return false;
           }
-        }
-
-        if (["Backspace", '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.', '+', '-', '×', '÷', '^', '/', '*'].indexOf(e.key) !== -1) {
-          return true;
-        } else {
-          e.preventDefault();
-          return false;
         }
       });
     }
