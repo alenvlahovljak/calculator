@@ -5,8 +5,8 @@
     var calculator = null;
 
     function create() {
-      var NON_NUMS = ['Backspace', 'Delete', '+', '-', '*', '/', 'x', '^'];
-      var ALLOWED_KEYS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'].concat(NON_NUMS);
+      var NON_NUMS = ['Delete', '+', '-', '*', '/', 'x', '^'];
+      var ALLOWED_KEYS = ['Backspace', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'].concat(NON_NUMS);
       var CALCULATOR_OPERATORS = ['+', '-', '×', '÷', '^'];
       var OPERATORS = /[+\-×÷^/*]/;
       var IS_DISPLAYED = false;
@@ -98,8 +98,13 @@
           throw new TypeError('Invalid argument: expected a HTMLElement');
         }
 
-        result.addEventListener("click", function () {
-          const {numbers, operators} = getValueString(input.value);
+        result.addEventListener("click", function (e) {
+          const {lastChar, numbers, operators} = getValueString(input.value);
+
+          if (CALCULATOR_OPERATORS.includes(lastChar)) {
+            window.alert('Cannot submit with last operator as an input!');
+            return e.preventDefault();
+          }
 
           var operate = {
             _operators: [],
@@ -191,7 +196,7 @@
             return false;
           }
 
-          if ([...NON_NUMS, '.'].includes(e.key) && [...NON_NUMS, '.'].includes(input.value[input.value.length - 1])) {
+          if (NON_NUMS.includes(e.key) && NON_NUMS.includes(input.value[input.value.length - 1])) {
             console.log("Cannot enter two operators!");
             e.preventDefault();
             return false;
@@ -201,7 +206,7 @@
           var substrings = filterOperators(str);
 
           for (var sub of substrings) {
-            if (e.key === '.' && /\..*\./.test(sub)) {
+            if (e.key == '.' && /\..*\./.test(sub)) {
               console.log("Cannot enter two dots in a number!");
               e.preventDefault();
               return false;
