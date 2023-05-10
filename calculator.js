@@ -5,16 +5,31 @@
     var calculator = null;
 
     function create() {
+      var NON_NUMS = ['Backspace', 'Delete', '+', '-', '*', '/', 'x', '^'];
+      var ALLOWED_KEYS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'].concat(NON_NUMS);
       var CALCULATOR_OPERATORS = ['+', '-', '×', '÷', '^'];
       var OPERATORS = /[+\-×÷^/*]/;
       var IS_DISPLAYED = false;
 
-      function getValueString(value) {
+      function filterOperators(value) {
+        if (typeof value != 'string') {
+          throw new TypeError('Invalid argument: expected a string');
+        }
+
+        return value.split(OPERATORS);
+      }
+
+      function getValueString(value, key) {
         if (typeof value != 'string') {
           throw new TypeError('Invalid argument: expected a string');
         }
 
         var str = value;
+
+        if (key) {
+          str += key;
+        }
+
         var lastChar = str[str.length - 1];
         var numbers = str.split(/\+|\-|\×|\÷|\^/g);
         var operators = str.replace(/[0-9]|\./g, "").split("");
@@ -30,32 +45,25 @@
           throw new TypeError('Invalid argument: expected a NodeList');
         }
 
-        // adding click handlers to number buttons
         for (var i = 0; i < numbers.length; i++) {
           numbers[i].addEventListener("click", function (e) {
-            // storing current input string and its last character in variables - used later
             const {str, lastChar} = getValueString(input.value);
-
-            var substrings = (str + e.target.textContent).split(OPERATORS);
+            var substrings = filterOperators(str + e.target.textContent);
 
             for (var substr of substrings) {
-              if (e.target.textContent === '.' && /\..*\./.test(substr)) {
+              if (e.target.textContent == '.' && /\..*\./.test(substr)) {
+                console.log("Cannot enter two dots in a number!");
                 e.preventDefault();
                 return false;
               }
             }
 
-            // if result is not displayed, just keep adding
-            if (IS_DISPLAYED === false) {
+            if (IS_DISPLAYED == false) {
               input.value += e.target.textContent;
             } else if (IS_DISPLAYED == true && CALCULATOR_OPERATORS.includes(lastChar)) {
-              // if result is currently displayed and user pressed an operator
-              // we need to keep on adding to the string for next operation
               IS_DISPLAYED = false;
               input.value += e.target.textContent;
             } else {
-              // if result is currently displayed and user pressed a number
-              // we need clear the input string and add the new input to start the new operation
               IS_DISPLAYED = false;
               input.value = "";
               input.value += e.target.textContent;
@@ -69,20 +77,15 @@
           throw new TypeError('Invalid argument: expected a NodeList');
         }
 
-        // adding click handlers to number buttons
         for (var i = 0; i < operators.length; i++) {
           operators[i].addEventListener("click", function (e) {
-            // storing current input string and its last character in variables - used later
             const {str, lastChar} = getValueString(input.value);
 
-            // if last character entered is an operator, replace it with the currently pressed one
             if (CALCULATOR_OPERATORS.includes(lastChar)) {
               input.value = str.substring(0, str.length - 1) + e.target.textContent;
-            } else if (str.length === 0) {
-              // if first key pressed is an operator, don't do anything
+            } else if (str.length == 0) {
               console.log("enter a number first");
             } else {
-              // else just add the operator pressed to the input
               input.value += e.target.textContent;
             }
 
@@ -95,20 +98,8 @@
           throw new TypeError('Invalid argument: expected a HTMLElement');
         }
 
-        // on click of 'equal' button
         result.addEventListener("click", function () {
-          // this is the string that we will be processing eg. -10+26+33-56*34/23
-          const {str, numbers, operators} = getValueString(input.value);
-
-          console.log(str);
-          console.log(operators);
-          console.log(numbers);
-          console.log("----------------------------");
-
-          // now we are looping through the array and doing one operation at a time.
-          // first divide, then multiply, then subtraction and then addition
-          // as we move we are alternating the original numbers and operators array
-          // the final element remaining in the array will be the output
+          const {numbers, operators} = getValueString(input.value);
 
           var operate = {
             _operators: [],
@@ -144,7 +135,6 @@
             add() {
               var add = this._operators.indexOf("+");
               while (add != -1) {
-                // using parseFloat is necessary, otherwise it will result in string concatenation :)
                 this._numbers.splice(add, 2, parseFloat(this._numbers[add]) + parseFloat(this._numbers[add + 1]));
                 this._operators.splice(add, 1);
                 add = this._operators.indexOf("+");
@@ -161,14 +151,10 @@
           }
 
           operate.execute = function (name) {
-            // skip the first argument
             var args = Array.prototype.slice.call(arguments, 1);
-
-            // push the name of the command and the arguments passed in
             this._operators.push(name);
 
             if (operate[name]) {
-              // pass arguments to the function
               return operate[name].apply(operate, args);
             }
 
@@ -182,8 +168,8 @@
           operate.execute('subtract');
           operate.execute('add');
 
-          input.value = operate._numbers[0]; // displaying the output
-          IS_DISPLAYED = true; // turning flag if result is displayed
+          input.value = operate._numbers[0];
+          IS_DISPLAYED = true;
         });
       }
 
@@ -193,33 +179,30 @@
         }
 
         input.addEventListener('keydown', (e) => {
-          if (!['Backspace', 'Delete', '.', '+', '-', '*', '/', 'x', '^', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(e.key)) {
+          if (!ALLOWED_KEYS.includes(e.key)) {
+            console.log("The key " + e.key + " is not allowed!");
             e.preventDefault();
             return false;
           }
 
-
-          var operands = ['Backspace', 'Delete', '+', '-', '*', '/', 'x', '^'];
-
-          if (operands.includes(e.key) && input.value.length === 0) {
-            console.log("enter a number first");
-
+          if (NON_NUMS.includes(e.key) && input.value.length == 0) {
+            console.log("Enter a number first!");
             e.preventDefault();
             return false;
           }
 
-          if ([...operands, '.'].includes(e.key) && [...operands, '.'].includes(input.value[input.value.length - 1])) {
-            console.log("cannot enter two operators");
-
+          if ([...NON_NUMS, '.'].includes(e.key) && [...NON_NUMS, '.'].includes(input.value[input.value.length - 1])) {
+            console.log("Cannot enter two operators!");
             e.preventDefault();
             return false;
           }
 
-          var value = e.target.value + e.key;
-          var substrings = value.split(OPERATORS);
+          const {str} = getValueString(input.value, e.key);
+          var substrings = filterOperators(str);
 
           for (var sub of substrings) {
             if (e.key === '.' && /\..*\./.test(sub)) {
+              console.log("Cannot enter two dots in a number!");
               e.preventDefault();
               return false;
             }
@@ -232,7 +215,6 @@
           throw new TypeError('Invalid argument: expected a HTMLElement');
         }
 
-        // clear input when user click on clear button
         clear.addEventListener("click", function () {
           input.value = "";
         })
