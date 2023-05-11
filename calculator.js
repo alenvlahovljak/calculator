@@ -59,17 +59,17 @@
             }
 
             if (IS_DISPLAYED == false) {
-              input.focus();
               input.value += e.target.textContent;
-            } else if (IS_DISPLAYED == true && CALCULATOR_OPERATORS.includes(lastChar)) {
               input.focus();
+            } else if (IS_DISPLAYED == true && CALCULATOR_OPERATORS.includes(lastChar)) {
               IS_DISPLAYED = false;
               input.value += e.target.textContent;
-            } else {
               input.focus();
+            } else {
               IS_DISPLAYED = false;
               input.value = "";
               input.value += e.target.textContent;
+              input.focus();
             }
           });
         }
@@ -86,10 +86,12 @@
 
             if (CALCULATOR_OPERATORS.includes(lastChar)) {
               input.value = str.substring(0, str.length - 1) + e.target.textContent;
+              input.focus();
             } else if (e.target.textContent != '-' && str.length == 0) {
               console.log("enter a number first");
             } else {
               input.value += e.target.textContent;
+              input.focus();
             }
 
           });
