@@ -47,7 +47,7 @@
 
         for (var i = 0; i < numbers.length; i++) {
           numbers[i].addEventListener("click", function (e) {
-            const {str, lastChar} = getValueString(input.value);
+            var {str, lastChar} = getValueString(input.value);
             var substrings = filterOperators(str + e.target.textContent);
 
             for (var substr of substrings) {
@@ -79,7 +79,7 @@
 
         for (var i = 0; i < operators.length; i++) {
           operators[i].addEventListener("click", function (e) {
-            const {str, lastChar} = getValueString(input.value);
+            var {str, lastChar} = getValueString(input.value);
 
             if (CALCULATOR_OPERATORS.includes(lastChar)) {
               input.value = str.substring(0, str.length - 1) + e.target.textContent;
@@ -99,7 +99,7 @@
         }
 
         result.addEventListener("click", function (e) {
-          const {lastChar, numbers, operators} = getValueString(input.value);
+          var {lastChar, numbers, operators} = getValueString(input.value);
 
           if (CALCULATOR_OPERATORS.includes(lastChar)) {
             window.alert('Cannot submit with last operator as an input!');
@@ -202,7 +202,7 @@
             return false;
           }
 
-          const {str} = getValueString(input.value, e.key);
+          var {str} = getValueString(input.value, e.key);
           var substrings = filterOperators(str);
 
           for (var sub of substrings) {
@@ -241,11 +241,11 @@
     }
   })();
 
-  var input = document.getElementById('input'), // input/output button
-    numbers = document.querySelectorAll('.numbers div'), // number buttons
-    operators = document.querySelectorAll('.operators div'), // operator buttons
-    result = document.getElementById('result'), // equal button
-    clear = document.getElementById('clear'); // clear button
+  var input = document.getElementById('input'),
+    numbers = document.querySelectorAll('.numbers div'),
+    operators = document.querySelectorAll('.operators div'),
+    result = document.getElementById('result'),
+    clear = document.getElementById('clear');
 
   var calculator = Calculator.getInstance();
   calculator.initKeyboard(input);
