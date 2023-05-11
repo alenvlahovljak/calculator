@@ -199,7 +199,10 @@
           }
 
           if (NON_NUMS.includes(e.key) && NON_NUMS.includes(input.value[input.value.length - 1])) {
-            console.log("Cannot enter two operators!");
+            var {str, lastChar} = getValueString(input.value);
+
+            input.value = str.substring(0, str.length - 1) + e.key;
+            console.log("Operator " + lastChar + " replaced with " + e.key);
             e.preventDefault();
             return false;
           }
