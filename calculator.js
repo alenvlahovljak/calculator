@@ -173,8 +173,9 @@
           operate.execute('subtract');
           operate.execute('add');
 
-          input.value = operate._numbers[0];
           input.focus();
+          input.value = '';
+          input.value = operate._numbers[0];
           IS_DISPLAYED = true;
         });
       }
@@ -211,6 +212,13 @@
             if (str == 'Infinity' || str == 'NaN') {
               clear.click();
             }
+
+            // kada kuca bilo sta da obrise infinity ili nan
+            // ako baci ovo dvoje stavi error rezultat i kada kuca poslije toga nesto
+            // obrisi error string
+            // dodati da stavlja fokus na svaku tipku
+            // nakon entera dodaje cursor na pocetak umjesto na kraj (fixa se da ne ide ispred toga)
+
           }
 
           if (e.key != '-' && ((NON_NUMS.includes(e.key)) && input.value.length == 0)) {
