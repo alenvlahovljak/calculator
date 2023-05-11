@@ -83,7 +83,7 @@
 
             if (CALCULATOR_OPERATORS.includes(lastChar)) {
               input.value = str.substring(0, str.length - 1) + e.target.textContent;
-            } else if (str.length == 0) {
+            } else if (e.target.textContent != '-' && str.length == 0) {
               console.log("enter a number first");
             } else {
               input.value += e.target.textContent;
@@ -184,6 +184,12 @@
           throw new TypeError('Invalid argument: expected a HTMLElement');
         }
 
+        input.addEventListener('click', function () {
+          var inputLength = input.value.length;
+          input.selectionStart = inputLength;
+          input.selectionEnd = inputLength;
+        });
+
         input.addEventListener('keydown', (e) => {
           if (!ALLOWED_KEYS.includes(e.key)) {
             console.log("The key " + e.key + " is not allowed!");
@@ -199,7 +205,7 @@
             clear.click();
           }
 
-          if (NON_NUMS.includes(e.key) && input.value.length == 0) {
+          if (e.key != '-' && ((NON_NUMS.includes(e.key)) && input.value.length == 0)) {
             console.log("Enter a number first!");
             e.preventDefault();
             return false;
