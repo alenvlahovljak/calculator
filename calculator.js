@@ -59,11 +59,14 @@
             }
 
             if (IS_DISPLAYED == false) {
+              input.focus();
               input.value += e.target.textContent;
             } else if (IS_DISPLAYED == true && CALCULATOR_OPERATORS.includes(lastChar)) {
+              input.focus();
               IS_DISPLAYED = false;
               input.value += e.target.textContent;
             } else {
+              input.focus();
               IS_DISPLAYED = false;
               input.value = "";
               input.value += e.target.textContent;
@@ -173,9 +176,8 @@
           operate.execute('subtract');
           operate.execute('add');
 
-          input.focus();
-          input.value = '';
           input.value = operate._numbers[0];
+          input.focus();
           IS_DISPLAYED = true;
         });
       }
@@ -185,10 +187,10 @@
           throw new TypeError('Invalid argument: expected a HTMLElement');
         }
 
-        input.addEventListener('click', function () {
-          var inputLength = input.value.length;
-          input.selectionStart = inputLength;
-          input.selectionEnd = inputLength;
+        input.addEventListener('mousedown', function (e) {
+          if (e.target == input && e.target.value.length != 0) {
+            e.preventDefault();
+          }
         });
 
         input.addEventListener('keydown', (e) => {
@@ -216,8 +218,7 @@
             // kada kuca bilo sta da obrise infinity ili nan
             // ako baci ovo dvoje stavi error rezultat i kada kuca poslije toga nesto
             // obrisi error string
-            // dodati da stavlja fokus na svaku tipku
-            // nakon entera dodaje cursor na pocetak umjesto na kraj (fixa se da ne ide ispred toga)
+
 
           }
 
