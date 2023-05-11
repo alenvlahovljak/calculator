@@ -5,7 +5,7 @@
     var calculator = null;
 
     function create() {
-      var NON_NUMS = ['Delete', '+', '-', '*', '/', 'x', '^'];
+      var NON_NUMS = ['Delete', '+', '-', '*', '/', '×', '÷', '^'];
       var ALLOWED_KEYS = ['Backspace', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'].concat(NON_NUMS);
       var CALCULATOR_OPERATORS = ['+', '-', '×', '÷', '^'];
       var OPERATORS = /[+\-×÷^/*]/;
@@ -30,12 +30,12 @@
           str += key;
         }
 
+        str = str.replace(/\*/g, "×");
+        str = str.replace(/\//g, "÷");
+
         var lastChar = str[str.length - 1];
         var numbers = str.split(/\+|\-|\×|\÷|\^/g);
         var operators = str.replace(/[0-9]|\./g, "").split("");
-
-        str = str.replace(/\*/g, "×");
-        str = str.replace(/\//g, "÷");
 
         return {str, numbers, operators, lastChar};
       }
@@ -101,10 +101,12 @@
         result.addEventListener("click", function (e) {
           var {lastChar, numbers, operators} = getValueString(input.value);
 
-          if (CALCULATOR_OPERATORS.includes(lastChar)) {
-            window.alert('Cannot submit with last operator as an input!');
-            return e.preventDefault();
-          }
+          console.log('alen', numbers, operators);
+
+          // if (CALCULATOR_OPERATORS.includes(lastChar)) {
+          //   window.alert('Cannot submit with last operator as an input!');
+          //   return e.preventDefault();
+          // }
 
           var operate = {
             _operators: [],
