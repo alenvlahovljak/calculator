@@ -205,6 +205,14 @@
             clear.click();
           }
 
+          if (e.key == 'Backspace') {
+            var {str} = getValueString(input.value);
+
+            if (str == 'Infinity' || str == 'NaN') {
+              clear.click();
+            }
+          }
+
           if (e.key != '-' && ((NON_NUMS.includes(e.key)) && input.value.length == 0)) {
             console.log("Enter a number first!");
             e.preventDefault();
