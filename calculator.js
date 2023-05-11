@@ -103,10 +103,10 @@
 
           console.log('alen', numbers, operators);
 
-          // if (CALCULATOR_OPERATORS.includes(lastChar)) {
-          //   window.alert('Cannot submit with last operator as an input!');
-          //   return e.preventDefault();
-          // }
+          if (CALCULATOR_OPERATORS.includes(lastChar)) {
+            window.alert('Cannot submit with last operator as an input!');
+            return e.preventDefault();
+          }
 
           var operate = {
             _operators: [],
