@@ -93,8 +93,8 @@
         }
       }
 
-      function getResult(result) {
-        if (!(result instanceof HTMLElement)) {
+      function getResult(result, input) {
+        if (!(result instanceof HTMLElement) || !(input instanceof HTMLElement)) {
           throw new TypeError('Invalid argument: expected a HTMLElement');
         }
 
@@ -174,6 +174,7 @@
           operate.execute('add');
 
           input.value = operate._numbers[0];
+          input.focus();
           IS_DISPLAYED = true;
         });
       }
@@ -262,7 +263,7 @@
   calculator.initKeyboard(input, result, clear);
   calculator.getNumbers(numbers);
   calculator.getOperators(operators);
-  calculator.getResult(result);
+  calculator.getResult(result, input);
   calculator.clearInput(clear);
 })();
 
