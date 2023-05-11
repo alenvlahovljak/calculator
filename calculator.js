@@ -84,7 +84,18 @@
           operators[i].addEventListener("click", function (e) {
             var {str, lastChar} = getValueString(input.value);
 
-            if (CALCULATOR_OPERATORS.includes(lastChar)) {
+            if (str == 'Error') {
+              input.value = '';
+
+              if (e.target.textContent == '-') {
+                input.value = e.target.textContent;
+              }
+
+              input.focus();
+            } else if (str[0] == '-' && str.length == 1 && NON_NUMS.includes(e.target.textContent)) {
+              console.log('Cannot change the sign of the number');
+              input.focus();
+            } else if (CALCULATOR_OPERATORS.includes(lastChar)) {
               input.value = str.substring(0, str.length - 1) + e.target.textContent;
               input.focus();
             } else if (e.target.textContent != '-' && str.length == 0) {
@@ -93,9 +104,16 @@
               input.value += e.target.textContent;
               input.focus();
             }
-
           });
         }
+      }
+
+      function getCalculation(calc) {
+        if (typeof calc == 'number' && !isNaN(calc) && isFinite(calc)) {
+          return calc;
+        }
+
+        return "Error";
       }
 
       function getResult(result, input) {
@@ -108,7 +126,8 @@
 
           if (CALCULATOR_OPERATORS.includes(lastChar)) {
             window.alert('Cannot submit with last operator as an input!');
-            return e.preventDefault();
+            input.focus();
+            return;
           }
 
           var operate = {
@@ -121,7 +140,7 @@
             exponent() {
               var exponent = this._operators.indexOf("^");
               while (exponent != -1) {
-                this._numbers.splice(exponent, 2, this._numbers[exponent] ** this._numbers[exponent + 1]);
+                this._numbers.splice(exponent, 2, getCalculation(this._numbers[exponent] ** this._numbers[exponent + 1]));
                 this._operators.splice(exponent, 1);
                 exponent = this._operators.indexOf("^");
               }
@@ -129,7 +148,7 @@
             divide() {
               var divide = this._operators.indexOf("÷");
               while (divide != -1) {
-                this._numbers.splice(divide, 2, this._numbers[divide] / this._numbers[divide + 1]);
+                this._numbers.splice(divide, 2, getCalculation(this._numbers[divide] / this._numbers[divide + 1]));
                 this._operators.splice(divide, 1);
                 divide = this._operators.indexOf("÷");
               }
@@ -137,7 +156,7 @@
             multiply() {
               var multiply = this._operators.indexOf("×");
               while (multiply != -1) {
-                this._numbers.splice(multiply, 2, this._numbers[multiply] * this._numbers[multiply + 1]);
+                this._numbers.splice(multiply, 2, getCalculation(this._numbers[multiply] * this._numbers[multiply + 1]));
                 this._operators.splice(multiply, 1);
                 multiply = this._operators.indexOf("×");
               }
@@ -145,7 +164,7 @@
             add() {
               var add = this._operators.indexOf("+");
               while (add != -1) {
-                this._numbers.splice(add, 2, parseFloat(this._numbers[add]) + parseFloat(this._numbers[add + 1]));
+                this._numbers.splice(add, 2, getCalculation(parseFloat(this._numbers[add]) + parseFloat(this._numbers[add + 1])));
                 this._operators.splice(add, 1);
                 add = this._operators.indexOf("+");
               }
@@ -153,7 +172,7 @@
             subtract() {
               var subtract = this._operators.indexOf("-");
               while (subtract != -1) {
-                this._numbers.splice(subtract, 2, this._numbers[subtract] - this._numbers[subtract + 1]);
+                this._numbers.splice(subtract, 2, getCalculation(this._numbers[subtract] - this._numbers[subtract + 1]));
                 this._operators.splice(subtract, 1);
                 subtract = this._operators.indexOf("-");
               }
@@ -206,33 +225,25 @@
             result.click();
           }
 
-          if (e.key == 'Escape') {
+          var {str, lastChar} = getValueString(input.value);
+
+          if (e.key == 'Escape' || (e.key && str == 'Error')) {
             clear.click();
           }
 
-          if (e.key == 'Backspace') {
-            var {str} = getValueString(input.value);
-
-            if (str == 'Infinity' || str == 'NaN') {
-              clear.click();
-            }
-
-            // kada kuca bilo sta da obrise infinity ili nan
-            // ako baci ovo dvoje stavi error rezultat i kada kuca poslije toga nesto
-            // obrisi error string
-
-
-          }
-
-          if (e.key != '-' && ((NON_NUMS.includes(e.key)) && input.value.length == 0)) {
+          if (e.key != '-' && ((NON_NUMS.includes(e.key)) && str.length == 0)) {
             console.log("Enter a number first!");
             e.preventDefault();
             return false;
           }
 
-          if (NON_NUMS.includes(e.key) && NON_NUMS.includes(input.value[input.value.length - 1])) {
-            var {str, lastChar} = getValueString(input.value);
+          if (str[0] == '-' && str.length == 1 && NON_NUMS.includes(e.key)) {
+            console.log('Cannot change the sign of the number');
+            e.preventDefault();
+            return false;
+          }
 
+          if (NON_NUMS.includes(e.key) && NON_NUMS.includes(str[str.length - 1])) {
             input.value = str.substring(0, str.length - 1) + e.key;
             console.log("Operator " + lastChar + " replaced with " + e.key);
             e.preventDefault();
