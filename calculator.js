@@ -211,6 +211,7 @@
         input.addEventListener('mousedown', function (e) {
           if (e.target == input && e.target.value.length != 0) {
             e.preventDefault();
+            return false;
           }
         });
 
@@ -223,12 +224,14 @@
 
           if (e.key == 'Enter') {
             result.click();
+            return false;
           }
 
           var {str, lastChar} = getValueString(input.value);
 
           if (e.key == 'Escape' || (e.key && str == 'Error')) {
             clear.click();
+            return false;
           }
 
           if (e.key != '-' && ((NON_NUMS.includes(e.key)) && str.length == 0)) {
