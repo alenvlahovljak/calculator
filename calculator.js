@@ -6,7 +6,7 @@
 
     function create() {
       var NON_NUMS = ['Delete', '+', '-', '*', '/', '×', '÷', '^'];
-      var ALLOWED_KEYS = ["Shift", 'Backspace', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'].concat(NON_NUMS);
+      var ALLOWED_KEYS = ["Escape", "Enter", "Shift", 'Backspace', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'].concat(NON_NUMS);
       var CALCULATOR_OPERATORS = ['+', '-', '×', '÷', '^'];
       var OPERATORS = /[+\-×÷^/*]/;
       var IS_DISPLAYED = false;
@@ -101,8 +101,6 @@
         result.addEventListener("click", function (e) {
           var {lastChar, numbers, operators} = getValueString(input.value);
 
-          console.log('alen', numbers, operators);
-
           if (CALCULATOR_OPERATORS.includes(lastChar)) {
             window.alert('Cannot submit with last operator as an input!');
             return e.preventDefault();
@@ -180,8 +178,8 @@
         });
       }
 
-      function initKeyboard(input) {
-        if (!(input instanceof HTMLElement)) {
+      function initKeyboard(input, result, clear) {
+        if (!(input instanceof HTMLElement) || !(result instanceof HTMLElement) || !(clear instanceof HTMLElement)) {
           throw new TypeError('Invalid argument: expected a HTMLElement');
         }
 
@@ -190,6 +188,14 @@
             console.log("The key " + e.key + " is not allowed!");
             e.preventDefault();
             return false;
+          }
+
+          if (e.key == 'Enter') {
+            result.click();
+          }
+
+          if (e.key == 'Escape') {
+            clear.click();
           }
 
           if (NON_NUMS.includes(e.key) && input.value.length == 0) {
@@ -253,7 +259,7 @@
     clear = document.getElementById('clear');
 
   var calculator = Calculator.getInstance();
-  calculator.initKeyboard(input);
+  calculator.initKeyboard(input, result, clear);
   calculator.getNumbers(numbers);
   calculator.getOperators(operators);
   calculator.getResult(result);
